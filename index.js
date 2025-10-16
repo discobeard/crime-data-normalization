@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as readline from 'readline';
+import { v4 as uuidv4 } from 'uuid';
 
 const dataDirectory = './data';
 const outputDirectory = './output';
@@ -33,17 +34,18 @@ const compileFileLines = (filePath, index) => {
 
   rl.on('line', (line) => {
     const indices = [0, 1, 4, 5, 9];
-    if (index === 0) {
+    if (index === 0 && !headersRetrieved) {
       const headerTokens = line.split(',');
       const reducedHeaders = indices.map((i) => headerTokens[i]);
-      writeStream.write(reducedHeaders + '\n');
+      writeStream.write(`id, ${reducedHeaders} \n`);
       headersRetrieved = true;
     }
     if (lineIndex > 0) {
       const lineTokens = line.split(',');
       const reducedData = indices.map((i) => lineTokens[i]);
       if (reducedData[2] !== '' && reducedData[3] !== '') {
-        writeStream.write(reducedData + '\n');
+        const id = uuidv4();
+        writeStream.write(`${uuidv4()}, ${reducedData} \n`);
       }
     }
     lineIndex++;
